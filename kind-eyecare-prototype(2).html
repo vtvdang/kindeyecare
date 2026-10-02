@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kind Eyecare Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --teal:#2b85c6; --teal-2:#4baae8; --mint:#e4f3fc; --sand:#ffffff;
+  --ink:#464646; --muted:#6d6e6f; --line:#dfe5ea; --card:#ffffff; --bg:#f4f8fa;
+  --gray:#59595b; --sky-1:#67d6f8; --sky-2:#88d1f2; --sky-3:#beceeb;
+  --accent:#7aa64e; --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+h1,h2,h3{font-family:"DM Serif Display",Georgia,serif;font-weight:400;line-height:1.15;margin:0 0 .5em}
+h2,h3{color:var(--teal-2)}
+a{color:var(--teal-2)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+section{padding:72px 0}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-2);font-weight:700;margin-bottom:.6em}
+
+/* header */
+header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:"DM Serif Display",serif;font-size:1.4rem;color:var(--gray);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.logo::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--teal-2);box-shadow:0 0 0 4px #6d6e70 inset}
+.logo span{color:var(--gray)}
+.nav ul{display:flex;gap:24px;list-style:none;margin:0;padding:0}
+.nav ul a{text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem}
+.nav ul a:hover{color:var(--teal-2)}
+.nav .call{background:var(--accent);color:#fff;padding:8px 14px;border-radius:999px;text-decoration:none;font-weight:700;font-size:.9rem;white-space:nowrap}
+@media(max-width:820px){.nav ul{display:none}}
+
+/* hero */
+.hero{position:relative;color:#fff;padding:110px 0 96px;background:linear-gradient(180deg,var(--sky-1),var(--sky-2) 55%,var(--sky-3))}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(2.2rem,5vw,3.6rem);max-width:640px;text-shadow:0 1px 12px rgba(30,90,140,.25)}
+.hero p{max-width:540px;font-size:1.1rem;color:#2e3a42}
+.hero .eyebrow{color:#1f5f8f}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:700;padding:13px 22px;border-radius:999px;text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.05)}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid #fff}
+.btn-dark{background:var(--teal);color:#fff}
+.btn-line{background:#fff;color:var(--teal);border:1px solid var(--line)}
+
+/* about / services */
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+@media(max-width:820px){.grid2{grid-template-columns:1fr;gap:28px}}
+.badge{display:inline-block;background:var(--mint);color:var(--teal);padding:6px 12px;border-radius:999px;font-size:.85rem;font-weight:500;margin:0 6px 8px 0}
+.hours{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.hours table{width:100%;border-collapse:collapse}
+.hours td{padding:9px 0;border-bottom:1px solid var(--line)}
+.hours tr:last-child td{border:0}
+.hours td:last-child{text-align:right;color:var(--muted)}
+.services{background:var(--sand);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card h3{font-size:1.25rem}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.icon{width:40px;height:40px;border-radius:10px;background:var(--mint);display:grid;place-items:center;margin-bottom:14px;color:var(--teal)}
+
+/* review carousel */
+.rev-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px}
+.rev-summary{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.95rem}
+.rev-summary strong{font-size:2rem;color:var(--ink);font-family:"DM Serif Display",serif;font-weight:400}
+.stars{color:#f5a623;letter-spacing:2px;font-size:1rem}
+.carousel{position:relative;margin-top:28px}
+.track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 2px 12px;scrollbar-width:none}
+.track::-webkit-scrollbar{display:none}
+.rcard{flex:0 0 calc((100% - 36px)/3);scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;gap:12px}
+@media(max-width:900px){.rcard{flex-basis:calc((100% - 18px)/2)}}
+@media(max-width:600px){.rcard{flex-basis:88%}}
+.rcard p{margin:0;flex:1;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.rcard .who{display:flex;align-items:center;gap:10px;font-size:.9rem}
+.rcard .who img,.rcard .who .av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--mint);color:var(--teal);display:grid;place-items:center;font-weight:700}
+.rcard .who a{color:var(--ink);font-weight:700;text-decoration:none}
+.rcard .who small{display:block;color:var(--muted)}
+.rnav{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.arrows{display:flex;gap:8px}
+.arrows button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--teal);font-size:1.2rem;cursor:pointer}
+.arrows button:hover{background:var(--mint)}
+.dots{display:flex;gap:6px}
+.dots button{width:8px;height:8px;border-radius:999px;border:0;background:var(--line);padding:0;cursor:pointer;transition:width .2s}
+.dots button[aria-current="true"]{width:22px;background:var(--teal-2)}
+.attrib{font-size:.8rem;color:var(--muted);margin-top:14px;display:flex;gap:6px;align-items:center}
+
+/* forms / pdf */
+.forms{background:var(--mint)}
+.toolbar{position:sticky;top:64px;z-index:20;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:24px 0 18px;box-shadow:0 6px 20px rgba(43,133,198,.08)}
+.toolbar .btn{padding:9px 16px;font-size:.9rem}
+.toolbar .hint{color:var(--muted);font-size:.85rem;margin-left:auto}
+.btn-toggle[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pages{display:flex;flex-direction:column;gap:22px;align-items:center}
+.page{position:relative;width:100%;max-width:816px;background:#fff;box-shadow:0 10px 30px rgba(43,133,198,.15);border-radius:4px;--s:1;container-type:inline-size}
+.page canvas{display:block;width:100%;height:auto;border-radius:4px}
+.layer{position:absolute;inset:0}
+.layer.adding{cursor:text}
+.layer input[type=text]{position:absolute;border:0;background:rgba(75,170,232,.08);border-bottom:1px solid transparent;font-family:Helvetica,Arial,sans-serif;font-size:calc(10px * var(--s));padding:0 calc(2px * var(--s));color:#1e3346;outline:none;border-radius:2px}
+.layer input[type=text]:focus{background:rgba(122,166,78,.14);box-shadow:0 0 0 2px rgba(122,166,78,.5)}
+.layer input.sig{font-family:"Dancing Script",cursive;font-size:calc(15px * var(--s))}
+.layer input.free{background:rgba(122,166,78,.12);border:1px dashed rgba(122,166,78,.7)}
+.layer input[type=checkbox]{position:absolute;margin:0;accent-color:var(--teal);cursor:pointer}
+.loading{padding:40px;text-align:center;color:var(--muted)}
+
+/* footer */
+.site-foot{background:#4f5052;color:#dcdfe2;padding:48px 0}
+.site-foot .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:28px}
+.site-foot a{color:#fff}
+.site-foot h3{color:#fff;font-size:1.2rem}
+.site-foot small{display:block;margin-top:32px;opacity:.7}
+
+/* floating button */
+.fab{position:fixed;right:20px;bottom:20px;z-index:60;display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 20px 14px 16px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 10px 28px rgba(122,166,78,.45);transition:transform .2s}
+.fab:hover{transform:translateY(-2px)}
+.fab .pulse{position:absolute;inset:0;border-radius:999px;box-shadow:0 0 0 0 rgba(122,166,78,.6);animation:pulse 2.4s infinite;pointer-events:none}
+@keyframes pulse{70%{box-shadow:0 0 0 14px rgba(122,166,78,0)}100%{box-shadow:0 0 0 0 rgba(122,166,78,0)}}
+@media(max-width:520px){.fab .txt{display:none}.fab{padding:16px}}
+@media(prefers-reduced-motion:reduce){.fab .pulse{animation:none}}
+
+/* modal */
+dialog{border:0;border-radius:18px;padding:0;width:min(560px,calc(100% - 32px));max-height:calc(100vh - 40px);box-shadow:0 30px 80px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(30,40,50,.55);backdrop-filter:blur(3px)}
+.modal-head{background:var(--teal);color:#fff;padding:22px 24px;display:flex;justify-content:space-between;align-items:start}
+.modal-head h2{margin:0;font-size:1.6rem;color:#fff}
+.modal-head p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+.x{background:none;border:0;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1}
+form.appt{padding:22px 24px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+form.appt .full{grid-column:1/-1}
+@media(max-width:520px){form.appt{grid-template-columns:1fr}}
+label{font-size:.85rem;font-weight:500;display:block;margin-bottom:4px}
+.appt input,.appt select,.appt textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+.appt input:focus,.appt select:focus,.appt textarea:focus{outline:2px solid var(--teal-2);border-color:transparent}
+.seg{display:flex;gap:8px}
+.seg label{flex:1;margin:0;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center;cursor:pointer}
+.seg input{display:none}
+.seg input:checked+span{color:var(--teal);font-weight:700}
+.seg label:has(input:checked){border-color:var(--teal-2);background:var(--mint)}
+.note{font-size:.8rem;color:var(--muted);margin:0}
+.done{padding:40px 24px;text-align:center;display:none}
+.done .check{width:56px;height:56px;border-radius:50%;background:var(--mint);color:var(--teal);display:grid;place-items:center;margin:0 auto 14px;font-size:1.6rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top">Kind <span>Eyecare</span></a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#forms">Forms</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="call" href="tel:+12406684150">(240) 668-4150</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Germantown, Maryland</div>
+      <h1>Compassionate eye care, from a board-certified specialist.</h1>
+      <p>Dr. Khoa D. Hoang, M.D. specializes in general ophthalmology, cataract, refractive, and corneal care. Appointments Monday through Saturday.</p>
+      <div class="btns">
+        <button class="btn btn-primary" data-open-appt>Request an appointment</button>
+        <a class="btn btn-ghost" href="#forms">Fill out intake forms</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap grid2">
+      <div>
+        <div class="eyebrow">About</div>
+        <h2>Caring for the growing eye care needs of our community.</h2>
+        <p>Kind Eyecare was founded in 2019 by Dr. Khoa Hoang, a board-certified ophthalmologist with decades of experience. We aim to give every patient compassionate, high-quality, state-of-the-art care.</p>
+        <span class="badge">Board Certified</span>
+        <span class="badge">Top Doctor, Northern Virginia Magazine</span>
+        <span class="badge">Cornea Specialist</span>
+      </div>
+      <div class="hours">
+        <h3>Office Hours</h3>
+        <table>
+          <tr><td>Mon, Tue, Wed, Fri</td><td>8:00 AM – 4:00 PM</td></tr>
+          <tr><td>Thursday</td><td>8:00 AM – 6:00 PM</td></tr>
+          <tr><td>Select Saturdays</td><td>8:00 AM – 12:00 PM</td></tr>
+          <tr><td>Sunday</td><td>Closed</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="services">
+    <div class="wrap">
+      <div class="eyebrow">Services</div>
+      <h2>Top quality eye care.</h2>
+      <div class="cards">
+        <div class="card"><div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>General Ophthalmology</h3><p>Comprehensive eye exams and diagnosis and treatment of common eye conditions.</p></div>
+        <div class="card"><div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div><h3>Cataract Surgery</h3><p>Careful evaluation, surgery, and after-care with clear guidance at every step.</p></div>
+        <div class="card"><div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg></div><h3>Refractive Care</h3><p>Options to reduce dependence on glasses and contact lenses.</p></div>
+        <div class="card"><div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/></svg></div><h3>Corneal Disease</h3><p>Specialist care for cornea conditions, from dry eye to complex disease.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reviews">
+    <div class="wrap">
+      <div class="rev-head">
+        <div>
+          <div class="eyebrow">Reviews</div>
+          <h2 style="margin:0">What our patients are saying</h2>
+        </div>
+        <div class="rev-summary" id="revSummary"></div>
+      </div>
+      <div class="carousel" aria-roledescription="carousel" aria-label="Patient reviews">
+        <div class="track" id="track" tabindex="0"></div>
+        <div class="rnav">
+          <div class="dots" id="dots"></div>
+          <div class="arrows">
+            <button id="prev" aria-label="Previous reviews">‹</button>
+            <button id="next" aria-label="Next reviews">›</button>
+          </div>
+        </div>
+      </div>
+      <div class="attrib" id="attrib"></div>
+      <a class="btn btn-line" style="margin-top:18px" href="https://g.page/kindeyecare/review?rc" target="_blank" rel="noopener">Write a review on Google</a>
+    </div>
+  </section>
+
+  <section id="forms" class="forms">
+    <div class="wrap">
+      <div class="eyebrow">New patients</div>
+      <h2>Patient intake forms</h2>
+      <p>Type directly on the form below, then download the completed PDF. Use “Add text box” to write anywhere on a page.</p>
+      <div class="toolbar">
+        <button class="btn btn-line btn-toggle" id="addText" aria-pressed="false">＋ Add text box</button>
+        <button class="btn btn-dark" id="download">Download completed PDF</button>
+        <button class="btn btn-line" id="clear">Clear</button>
+        <span class="hint">Placeholder form · 4 pages</span>
+      </div>
+      <div class="pages" id="pages"><div class="loading">Loading form…</div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot" id="contact">
+  <div class="wrap">
+    <div class="cols">
+      <div><h3>Kind Eyecare</h3>9 Executive Park Court<br>Germantown, Maryland</div>
+      <div><h3>Contact</h3>Tel: <a href="tel:+12406684150">(240) 668-4150</a><br>Fax: (240) 442-1138<br><a href="https://www.instagram.com/kindeyecare/">Instagram</a></div>
+      <div><h3>Appointments</h3>Call us or <a href="#" data-open-appt>request one online</a>.</div>
+    </div>
+    <small>Prototype for review. © Kind Eyecare</small>
+  </div>
+</footer>
+
+<!-- Floating appointment button -->
+<button class="fab" data-open-appt aria-label="Request a new appointment">
+  <span class="pulse"></span>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 14v4M10 16h4"/></svg>
+  <span class="txt">Book appointment</span>
+</button>
+
+<dialog id="appt">
+  <div class="modal-head">
+    <div><h2>New appointment</h2><p>Leave your details and we’ll call to confirm a time.</p></div>
+    <button class="x" aria-label="Close" data-close>&times;</button>
+  </div>
+  <form class="appt" id="apptForm">
+    <div><label for="fn">First name *</label><input id="fn" required autocomplete="given-name"></div>
+    <div><label for="ln">Last name *</label><input id="ln" required autocomplete="family-name"></div>
+    <div><label for="ph">Phone *</label><input id="ph" type="tel" required autocomplete="tel" placeholder="(555) 555-5555"></div>
+    <div><label for="em">Email</label><input id="em" type="email" autocomplete="email"></div>
+    <div class="full"><label>Patient type</label>
+      <div class="seg">
+        <label><input type="radio" name="ptype" value="new" checked><span>New patient</span></label>
+        <label><input type="radio" name="ptype" value="returning"><span>Returning</span></label>
+      </div>
+    </div>
+    <div><label for="dt">Preferred date</label><input id="dt" type="date"></div>
+    <div><label for="tm">Preferred time</label>
+      <select id="tm"><option>Any time</option><option>Morning</option><option>Afternoon</option></select></div>
+    <div class="full"><label for="rs">Reason for visit</label>
+      <select id="rs"><option>Routine eye exam</option><option>Cataract consultation</option><option>Cornea / dry eye</option><option>Refractive consultation</option><option>Follow-up</option><option>Other</option></select></div>
+    <div class="full"><label for="cm">Contact preference</label>
+      <select id="cm"><option>Phone call</option><option>Text</option><option>Email</option></select></div>
+    <p class="note full">Please don’t include medical details here. For urgent eye problems, call (240) 668-4150.</p>
+    <div class="full"><button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Send request</button></div>
+  </form>
+  <div class="done" id="done">
+    <div class="check">✓</div>
+    <h2>Request received</h2>
+    <p>Thanks! Our office will contact you to confirm your appointment.</p>
+    <p class="note">(Prototype: this form isn’t connected to a backend yet.)</p>
+    <button class="btn btn-dark" data-close style="margin-top:12px">Close</button>
+  </div>
+</dialog>
+
+<script>
+/* ---------- Appointment modal ---------- */
+const dlg = document.getElementById('appt');
+const form = document.getElementById('apptForm');
+const done = document.getElementById('done');
+document.querySelectorAll('[data-open-appt]').forEach(b => b.addEventListener('click', e => {
+  e.preventDefault(); form.style.display = ''; done.style.display = 'none'; dlg.showModal();
+}));
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  // TODO: send to a HIPAA-compliant form endpoint
+  form.reset(); form.style.display = 'none'; done.style.display = 'block';
+});
+
+/* ---------- Google Reviews carousel ---------- */
+// 1. Create an API key in Google Cloud with the Maps JavaScript API + Places API (New) enabled.
+//    Restrict it to your website's domain (HTTP referrer restriction).
+// 2. Find the Place ID: https://developers.google.com/maps/documentation/places/web-service/place-id
+const GOOGLE_API_KEY = 'AIzaSyC1OjapEUxzLagEj16YfOnQX-oZvzuAKlc';   // e.g. 'AIza...'
+const GOOGLE_PLACE_ID = 'ChIJ0R_fqjottokRB5jwQ7N3xRY';  // e.g. 'ChIJ...'
+
+/*
+const FALLBACK_REVIEWS = [
+  { name: 'Lana Nguyen', rating: 5, text: 'While Dr. Hoang is busy, he takes the time to spend with you, which I find rare among most doctors these days. I highly recommend Dr. Hoang.' },
+  { name: 'Hung', rating: 5, text: 'He took his time to answer all my questions which I find is rare nowadays in a doctor.' },
+  { name: 'Lauren Dagins', rating: 5, text: 'I highly recommend Dr. Hoang. He is thorough, kind, and very caring.' },
+  { name: 'N. Lewis', rating: 5, text: 'He put my worries at ease. His bedside manners were exceptional. I would recommend his services to everyone.' },
+  { name: 'Lee Nicholson', rating: 5, text: 'I am a Peri-operative Nurse Practitioner. I have worked with many ophthalmologists in my 20 years as a NP but none as patient and thorough as Dr. Hoang.' },
+];
+*/
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const starStr = n => '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n));
+
+function loadMaps(key) {
+  return new Promise((resolve, reject) => {
+    window.__mapsReady = resolve;
+    const s = document.createElement('script');
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly&loading=async&callback=__mapsReady`;
+    s.async = true; s.onerror = reject; document.head.appendChild(s);
+  });
+}
+
+async function fetchGoogleReviews() {
+  await loadMaps(GOOGLE_API_KEY);
+  const { Place } = await google.maps.importLibrary('places');
+  const place = new Place({ id: GOOGLE_PLACE_ID });
+  await place.fetchFields({ fields: ['reviews', 'rating', 'userRatingCount', 'googleMapsURI'] });
+  return {
+    rating: place.rating, count: place.userRatingCount, url: place.googleMapsURI,
+    reviews: (place.reviews || []).filter(r => r.text).map(r => ({
+      name: r.authorAttribution?.displayName, photo: r.authorAttribution?.photoURI,
+      profile: r.authorAttribution?.uri, rating: r.rating, text: r.text,
+      when: r.relativePublishTimeDescription,
+    })),
+  };
+}
+
+function renderReviews(data, live) {
+  const track = document.getElementById('track');
+  track.innerHTML = data.reviews.map(r => `
+    <article class="rcard">
+      <div class="stars" aria-label="${r.rating} out of 5 stars">${starStr(r.rating)}</div>
+      <p>${esc(r.text)}</p>
+      <div class="who">
+        ${r.photo ? `<img src="${esc(r.photo)}" alt="" referrerpolicy="no-referrer">` : `<span class="av">${esc((r.name || '?')[0])}</span>`}
+        <div>${r.profile ? `<a href="${esc(r.profile)}" target="_blank" rel="noopener">${esc(r.name)}</a>` : `<strong>${esc(r.name)}</strong>`}
+        ${r.when ? `<small>${esc(r.when)}</small>` : ''}</div>
+      </div>
+    </article>`).join('');
+  if (data.rating) {
+    document.getElementById('revSummary').innerHTML =
+      `<strong>${data.rating.toFixed(1)}</strong><div><div class="stars">${starStr(data.rating)}</div>${data.count ? `${data.count} Google reviews` : ''}</div>`;
+  }
+  document.getElementById('attrib').innerHTML = live
+    ? `Reviews from <a href="${esc(data.url)}" target="_blank" rel="noopener">Google</a>`
+    : 'Sample reviews from the current website. Add a Google API key and Place ID to show live Google reviews.';
+  setupCarousel();
+}
+
+function setupCarousel() {
+  const track = document.getElementById('track'), dots = document.getElementById('dots');
+  const cards = [...track.children];
+  const perView = () => Math.max(1, Math.round(track.clientWidth / cards[0].offsetWidth));
+  const pageCount = () => Math.ceil(cards.length / perView());
+  const current = () => Math.round(track.scrollLeft / track.clientWidth);
+  const go = i => { const n = pageCount(); i = (i + n) % n; track.scrollTo({ left: cards[Math.min(i * perView(), cards.length - 1)].offsetLeft - cards[0].offsetLeft }); };
+  const drawDots = () => {
+    dots.innerHTML = Array.from({ length: pageCount() }, (_, i) => `<button aria-label="Go to page ${i + 1}"></button>`).join('');
+    [...dots.children].forEach((b, i) => b.onclick = () => go(i));
+    mark();
+  };
+  const mark = () => [...dots.children].forEach((b, i) => b.setAttribute('aria-current', i === current()));
+  document.getElementById('prev').onclick = () => go(current() - 1);
+  document.getElementById('next').onclick = () => go(current() + 1);
+  track.addEventListener('scroll', () => requestAnimationFrame(mark), { passive: true });
+  window.addEventListener('resize', drawDots);
+  drawDots();
+  // gentle autoplay, paused on hover/focus or reduced motion
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let paused = false;
+    const car = track.closest('.carousel');
+    ['mouseenter', 'focusin', 'touchstart'].forEach(e => car.addEventListener(e, () => paused = true, { passive: true }));
+    ['mouseleave', 'focusout'].forEach(e => car.addEventListener(e, () => paused = false));
+    setInterval(() => { if (!paused && !document.hidden) go(current() + 1); }, 6000);
+  }
+}
+
+(async () => {
+  if (GOOGLE_API_KEY && GOOGLE_PLACE_ID) {
+    try {
+      const data = await fetchGoogleReviews();
+      if (data.reviews.length) return renderReviews(data, true);
+    } catch (err) { console.error('Google reviews failed to load:', err); }
+  }
+  renderReviews({ reviews: FALLBACK_REVIEWS }, false);
+})();
+
+/* ---------- Placeholder intake PDF ---------- */
+const { PDFDocument, StandardFonts, rgb } = PDFLib;
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const W = 612, H = 792, M = 48, CW = W - 2 * M;
+const FIELDS = [];
+let baseBytes = null;
+
+const SPEC = [
+  { title: 'Patient Information', rows: [
+    { f: [['Last name', .4], ['First name', .4], ['M.I.', .2]] },
+    { f: [['Date of birth', .34], ['Sex', .26], ['Preferred language', .4]] },
+    { f: [['Street address', 1]] },
+    { f: [['City', .45], ['State', .2], ['ZIP', .35]] },
+    { f: [['Mobile phone', .5], ['Home phone', .5]] },
+    { f: [['Email', 1]] },
+    { h: 'Emergency contact' },
+    { f: [['Name', .5], ['Relationship', .5]] },
+    { f: [['Phone', .5], ['Referring physician', .5]] },
+  ]},
+  { title: 'Insurance', rows: [
+    { h: 'Primary insurance' },
+    { f: [['Insurance company', .6], ['Member ID', .4]] },
+    { f: [['Group number', .4], ['Subscriber name', .6]] },
+    { f: [['Subscriber date of birth', .5], ['Relationship to patient', .5]] },
+    { h: 'Secondary insurance' },
+    { f: [['Insurance company', .6], ['Member ID', .4]] },
+    { f: [['Group number', .4], ['Subscriber name', .6]] },
+    { h: 'Vision plan (if any)' },
+    { f: [['Plan name', .6], ['Member ID', .4]] },
+  ]},
+  { title: 'Medical & Eye History', rows: [
+    { f: [['Reason for today’s visit', 1]] },
+    { f: [['Current medications', 1]] },
+    { f: [['', 1]] },
+    { f: [['Allergies (medications, latex, etc.)', 1]] },
+    { f: [['Previous eye surgeries or injuries', 1]] },
+    { c: 'Check any that apply to you:', items: ['Glaucoma', 'Cataracts', 'Macular degeneration', 'Dry eye', 'Diabetes', 'High blood pressure', 'Wear glasses', 'Wear contact lenses'] },
+    { c: 'Family history:', items: ['Glaucoma', 'Macular degeneration', 'Blindness', 'Diabetes'] },
+  ]},
+  { title: 'Consent & Signature', rows: [
+    { p: 'I consent to examination and treatment by the physicians and staff of this practice. I authorize the release of information needed to process insurance claims and assign insurance benefits directly to the practice. I understand I am financially responsible for any charges not covered by insurance.' },
+    { p: 'I acknowledge that I have been offered a copy of the practice’s Notice of Privacy Practices.' },
+    { p: 'This is placeholder text for prototyping. Replace with the practice’s actual intake and consent language.' },
+    { f: [['Patient (or guardian) printed name', 1]] },
+    { f: [['Signature', .65, 'sig'], ['Date', .35]] },
+    { f: [['If signing for patient, relationship', 1]] },
+  ]},
+];
+
+function wrap(text, font, size, max) {
+  const out = []; let line = '';
+  for (const w of text.split(' ')) {
+    const t = line ? line + ' ' + w : w;
+    if (font.widthOfTextAtSize(t, size) > max) { out.push(line); line = w; } else line = t;
+  }
+  if (line) out.push(line); return out;
+}
+
+async function buildPlaceholder() {
+  const doc = await PDFDocument.create();
+  const reg = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const teal = rgb(.17, .52, .78), gray = rgb(.42, .43, .44), lineC = rgb(.76, .79, .82);
+  SPEC.forEach((pg, pi) => {
+    const p = doc.addPage([W, H]);
+    p.drawRectangle({ x: 0, y: H - 70, width: W, height: 70, color: teal });
+    p.drawText('KIND EYECARE', { x: M, y: H - 38, size: 14, font: bold, color: rgb(1, 1, 1) });
+    p.drawText('Patient Intake Form  |  Placeholder', { x: M, y: H - 55, size: 9, font: reg, color: rgb(.86, .94, .99) });
+    p.drawText(`Page ${pi + 1} of 4`, { x: W - M - 58, y: H - 38, size: 10, font: reg, color: rgb(1, 1, 1) });
+    p.drawText(pg.title, { x: M, y: H - 112, size: 18, font: bold, color: teal });
+    let y = H - 150;
+    for (const r of pg.rows) {
+      if (r.h) { y -= 6; p.drawText(r.h.toUpperCase(), { x: M, y, size: 9, font: bold, color: teal }); y -= 22; continue; }
+      if (r.p) {
+        for (const l of wrap(r.p, reg, 10, CW)) { p.drawText(l, { x: M, y, size: 10, font: reg, color: rgb(.27, .27, .27) }); y -= 15; }
+        y -= 12; continue;
+      }
+      if (r.c) {
+        p.drawText(r.c, { x: M, y, size: 9, font: bold, color: gray }); y -= 22;
+        r.items.forEach((it, i) => {
+          const col = i % 2, x = M + col * (CW / 2);
+          p.drawRectangle({ x, y: y - 2, width: 10, height: 10, borderColor: gray, borderWidth: 1 });
+          p.drawText(it, { x: x + 16, y, size: 10, font: reg, color: rgb(.27, .27, .27) });
+          FIELDS.push({ page: pi, type: 'check', x, y: y - 2 });
+          if (col === 1 || i === r.items.length - 1) y -= 20;
+        });
+        y -= 12; continue;
+      }
+      const gap = 14; let x = M;
+      const usable = CW - gap * (r.f.length - 1);
+      for (const [label, frac, kind] of r.f) {
+        const w = usable * frac;
+        if (label) p.drawText(label, { x, y, size: 8, font: reg, color: gray });
+        const ly = y - 22;
+        p.drawLine({ start: { x, y: ly }, end: { x: x + w, y: ly }, thickness: .8, color: lineC });
+        FIELDS.push({ page: pi, type: kind || 'text', x, y: ly, w });
+        x += w + gap;
+      }
+      y -= 44;
+    }
+    p.drawText('Kind Eyecare  ·  9 Executive Park Court, Germantown, MD  ·  (240) 668-4150', { x: M, y: 30, size: 8, font: reg, color: gray });
+  });
+  return doc.save();
+}
+
+/* ---------- Render + overlay ---------- */
+const pct = (v, total) => (v / total * 100) + '%';
+function placeInput(layer, f) {
+  let el;
+  if (f.type === 'check') {
+    el = document.createElement('input'); el.type = 'checkbox';
+    Object.assign(el.style, { left: pct(f.x, W), top: pct(H - f.y - 10, H), width: pct(10, W), height: pct(10, H) });
+  } else {
+    el = document.createElement('input'); el.type = 'text';
+    if (f.type === 'sig') { el.classList.add('sig'); el.placeholder = 'Type to sign'; }
+    if (f.type === 'free') el.classList.add('free');
+    Object.assign(el.style, { left: pct(f.x, W), top: pct(H - f.y - 17, H), width: pct(f.w, W), height: pct(17, H) });
+  }
+  el.dataset.pdf = f.type; el.dataset.page = f.page; el.dataset.x = f.x; el.dataset.y = f.y;
+  layer.appendChild(el); return el;
+}
+
+async function init() {
+  baseBytes = await buildPlaceholder();
+  const pdf = await pdfjsLib.getDocument({ data: baseBytes.slice() }).promise;
+  const holder = document.getElementById('pages'); holder.innerHTML = '';
+  const ro = new ResizeObserver(es => es.forEach(e => e.target.style.setProperty('--s', e.contentRect.width / W)));
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const vp = page.getViewport({ scale: 2 });
+    const wrapEl = document.createElement('div'); wrapEl.className = 'page';
+    const cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+    const layer = document.createElement('div'); layer.className = 'layer'; layer.dataset.page = i - 1;
+    wrapEl.append(cv, layer); holder.appendChild(wrapEl); ro.observe(wrapEl);
+    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    FIELDS.filter(f => f.page === i - 1).forEach(f => placeInput(layer, f));
+    layer.addEventListener('click', e => {
+      if (addBtn.getAttribute('aria-pressed') !== 'true' || e.target !== layer) return;
+      const r = layer.getBoundingClientRect(), s = r.width / W;
+      const x = (e.clientX - r.left) / s, top = (e.clientY - r.top) / s;
+      const el = placeInput(layer, { page: i - 1, type: 'free', x: Math.min(x, W - 160), y: H - top - 8, w: 160 });
+      el.focus();
+      el.addEventListener('blur', () => { if (!el.value.trim()) el.remove(); });
+    });
+  }
+}
+
+const addBtn = document.getElementById('addText');
+addBtn.addEventListener('click', () => {
+  const on = addBtn.getAttribute('aria-pressed') !== 'true';
+  addBtn.setAttribute('aria-pressed', on);
+  document.querySelectorAll('.layer').forEach(l => l.classList.toggle('adding', on));
+  addBtn.textContent = on ? 'Click a page to place text' : '＋ Add text box';
+});
+
+document.getElementById('clear').addEventListener('click', () => {
+  if (!confirm('Clear everything you typed?')) return;
+  document.querySelectorAll('[data-pdf]').forEach(el => {
+    if (el.dataset.pdf === 'free') el.remove(); else if (el.type === 'checkbox') el.checked = false; else el.value = '';
+  });
+});
+
+const clean = s => s.replace(/[^\x20-\x7E\xA0-\xFF]/g, '?');
+document.getElementById('download').addEventListener('click', async () => {
+  const out = await PDFDocument.load(baseBytes);
+  const font = await out.embedFont(StandardFonts.Helvetica);
+  const sigFont = await out.embedFont(StandardFonts.TimesRomanItalic);
+  const pages = out.getPages(), ink = rgb(.12, .2, .3);
+  document.querySelectorAll('[data-pdf]').forEach(el => {
+    const p = pages[+el.dataset.page], x = +el.dataset.x, y = +el.dataset.y;
+    if (el.type === 'checkbox') { if (el.checked) p.drawText('X', { x: x + 1.8, y: y + 1.5, size: 9, font, color: ink }); return; }
+    const v = el.value.trim(); if (!v) return;
+    const sig = el.dataset.pdf === 'sig';
+    p.drawText(clean(v), { x: x + 2, y: y + 4, size: sig ? 15 : 10, font: sig ? sigFont : font, color: ink });
+  });
+  const blob = new Blob([await out.save()], { type: 'application/pdf' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'kind-eyecare-intake.pdf' });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+
+init().catch(err => {
+  document.getElementById('pages').innerHTML = '<div class="loading">Couldn’t load the form. Check your internet connection and refresh.</div>';
+  console.error(err);
+});
+</script>
+</body>
+</html>
